@@ -4,6 +4,15 @@ pipeline {
         maven 'maven-3.9.9'
     }
 
+    environment {
+        // Define environment variables here
+        DOCKER_REGISTRY = 'docker.io'
+        DOCKER_REPO = 'arvmrt'
+        DOCKER_IMAGE = 'spring-boot-app'
+        DOCKER_TAG = '1.0'
+        MAVEN_HOME = '/usr/local/maven'
+    }
+
     stages {
 
         stage('Build') {
@@ -11,14 +20,6 @@ pipeline {
                 withMaven {
                     sh "mvn clean package"
                     archiveArtifacts artifacts: '**/target/*.jar'
-                    }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                withMaven {
-                    sh "mvn test"
                     }
             }
         }
@@ -31,7 +32,15 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh 'docker push arvmrt/spring-boot-sample:1.0'
+                script {
+                    // Login to Docker registry
+                    withCredentials([usernamePassword(credentialsId: 'docker-cred3', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin ${DOCKER_REGISTRY}"
+                    }
+                    
+                    // Push the Docker image to the registry
+                    sh "docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
             }
         }
 
