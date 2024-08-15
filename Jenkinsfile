@@ -5,10 +5,12 @@ pipeline {
     }
 
     stages {
-        stage('Clean') {
+
+        stage('Build') {
             steps {
                 withMaven {
-                    sh "mvn clean verify"
+                    sh "mvn clean package"
+                    archiveArtifacts artifacts: '**/target/*.jar'
                     }
             }
         }
@@ -21,30 +23,36 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                withMaven {
-                    sh "mvn package"
-                    }
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t jdk-spring-boot .'
+                sh 'docker build -t spring-boot-sample:1.0 .'
             }
         }
 
-        stage('Build Docker Image2') {
+        stage('Push Docker Image') {
             steps {
-                sh 'mvn -DskipTests ' +
-                    'clean package spring-boot:repackage ' +
-                    'docker:build docker:push'
+                sh 'docker push arvmrt/spring-boot-sample:1.0'
             }
         }
 
 
     }
+
+    post {
+        always {
+            // Clean up workspace
+            cleanWs()
+        }
+
+        success {
+            echo 'Pipeline succeeded!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+
 
 }
 
