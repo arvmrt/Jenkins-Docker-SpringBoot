@@ -25,7 +25,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t spring-boot-sample:1.0 .'
+                sh 'docker build -t arvmrt/spring-boot-sample:1.0 .'
             }
         }
 
