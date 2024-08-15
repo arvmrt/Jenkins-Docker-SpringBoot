@@ -35,6 +35,15 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image2') {
+            steps {
+                sh 'mvn -DskipTests ' +
+                    'clean package spring-boot:repackage ' +
+                    'docker:build docker:push'
+            }
+        }
+
+
     }
 
 }
