@@ -4,9 +4,21 @@ pipeline {
         maven 'maven-3.9.9'
     }
     stages {
+        stage('Clean') {
+            steps {
+                withMaven {
+                    sh "mvn clean verify"
+                    }
+            }
+        }
+    }
+
+    stages {
         stage('Test') {
             steps {
-                sh 'mvn test'
+                withMaven {
+                    sh "mvn test"
+                    }
             }
         }
     }
@@ -14,9 +26,11 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mvn package'
+                withMaven {
+                    sh "mvn package"
+                    }
             }
         }
     }
-}
 
+}
