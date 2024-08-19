@@ -3,6 +3,7 @@ pipeline {
     tools {
         maven 'maven-3.9.9'
     }
+
     stages {
         stage('Clean') {
             steps {
@@ -11,9 +12,7 @@ pipeline {
                     }
             }
         }
-    }
 
-    stages {
         stage('Test') {
             steps {
                 withMaven {
@@ -21,9 +20,7 @@ pipeline {
                     }
             }
         }
-    }
 
-    stages {
         stage('Build') {
             steps {
                 withMaven {
